@@ -18,9 +18,8 @@ st.markdown("---")
 
 @st.cache_data
 def load_data():
-    return pd.read_csv(
-        "https://huggingface.co/datasets/piyusshhh511/emi-prediction-dataset/resolve/main/feature_engineered_dataset.csv",
-        low_memory=False
+    return pd.read_parquet(
+        "data/processed/feature_engineered_dataset.parquet"
     )
 
 df = load_data()

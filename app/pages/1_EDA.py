@@ -19,7 +19,7 @@ st.markdown("---")
 @st.cache_data
 def load_data():
     return pd.read_csv(
-        "data/processed/feature_engineered_dataset.csv",
+        "https://huggingface.co/datasets/piyusshhh511/emi-prediction-dataset/resolve/main/feature_engineered_dataset.csv",
         low_memory=False
     )
 

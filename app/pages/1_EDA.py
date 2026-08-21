@@ -16,7 +16,7 @@ st.markdown("---")
 # Load Dataset
 # ==========================================================
 
-@st.cache_data
+@st.cache_data(show_spinner="Loading dataset...")
 def load_data():
     return pd.read_parquet(
         "data/processed/feature_engineered_dataset.parquet"
@@ -24,6 +24,10 @@ def load_data():
 
 df = load_data()
 
+sample_df = df.sample(
+    min(50000, len(df)),
+    random_state=42
+)
 # ==========================================================
 # Dataset Overview
 # ==========================================================
@@ -49,9 +53,28 @@ st.markdown("---")
 
 st.header("Dataset Preview")
 
+ROWS_PER_PAGE = 25
+
+total_rows = len(df)
+total_pages = (total_rows - 1) // ROWS_PER_PAGE + 1
+
+page = st.number_input(
+    "Page",
+    min_value=1,
+    max_value=total_pages,
+    value=1,
+    step=1
+)
+
+start = (page - 1) * ROWS_PER_PAGE
+end = start + ROWS_PER_PAGE
+
+st.write(f"Showing rows {start + 1} - {min(end, total_rows)} of {total_rows}")
+
 st.dataframe(
-    df.head(10),
-    use_container_width=True
+    df.iloc[start:end],
+    use_container_width=True,
+    height=500
 )
 
 st.markdown("---")
@@ -99,7 +122,7 @@ st.markdown("---")
 st.header("Statistical Summary")
 
 st.dataframe(
-    df.describe(),
+    df.describe(include="number"),
     use_container_width=True
 )
 
@@ -113,17 +136,17 @@ if "monthly_salary" in df.columns:
 
     st.header("Monthly Salary Distribution")
 
+
     fig = px.histogram(
-        df,
+        sample_df,
         x="monthly_salary",
         nbins=40,
         title="Monthly Salary"
     )
-
     st.plotly_chart(
         fig,
         use_container_width=True
-    )
+        )
 
 # ==========================================================
 # Credit Score
@@ -134,7 +157,7 @@ if "credit_score" in df.columns:
     st.header("Credit Score Distribution")
 
     fig = px.histogram(
-        df,
+        sample_df,
         x="credit_score",
         nbins=30,
         title="Credit Score"
@@ -154,7 +177,7 @@ if "max_monthly_emi" in df.columns:
     st.header("Maximum EMI Distribution")
 
     fig = px.histogram(
-        df,
+        sample_df,
         x="max_monthly_emi",
         nbins=40,
         title="Maximum Monthly EMI"
@@ -176,7 +199,7 @@ if "max_monthly_emi" in df.columns:
 st.header("EMI Eligibility Distribution")
 
 eligibility_count = (
-    df["emi_eligibility"]
+    sample_df["emi_eligibility"]
     .value_counts()
     .reset_index()
 )

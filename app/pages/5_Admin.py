@@ -17,15 +17,15 @@ st.markdown("---")
 # =====================================================
 
 try:
-    df = pd.read_csv(
-        "data/processed/feature_engineered_dataset.csv",
-        low_memory=False
+   df = pd.read_parquet(
+    "data/processed/feature_engineered_dataset.parquet"
     )
+   
+   total_records = len(df)
+   total_features = len(df.columns)
 
-    total_records = len(df)
-    total_features = len(df.columns)
-
-except:
+except Exception as e:
+    st.error(e)
     total_records = "Not Found"
     total_features = "Not Found"
 
@@ -65,13 +65,9 @@ st.markdown("---")
 st.subheader("📂 Project Resources")
 
 files = [
-
     "models/xgboost_model.pkl",
-
     "models/xgboost_regressor.pkl",
-
-    "data/processed/feature_engineered_dataset.csv"
-
+    "data/processed/feature_engineered_dataset.parquet"
 ]
 
 status = []
